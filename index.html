@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>职场求生指南 🏢</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --g:#00ff80;--r:#ff6b6b;--y:#ffd93d;--p:#c77dff;--b:#4a90d9;
+  --bg:#0d0d1a;--card:#111122;
+  --t1:#eeeeee;   /* primary text   - 情境、结果主文 */
+  --t2:#c0c0c0;   /* secondary text - 老板台词、选项文字 */
+  --t3:#999999;   /* tertiary       - 标签、提示、脚注 */
+  --t4:#666666;   /* minimal        - 仅装饰性文字 */
+}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--t1);font-family:'PingFang SC','Microsoft YaHei',sans-serif;overflow:hidden}
+.pbg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,128,.022)1px,transparent 1px),linear-gradient(90deg,rgba(0,255,128,.022)1px,transparent 1px);background-size:24px 24px;pointer-events:none;z-index:0}
+
+/* screens */
+.screen{display:none;position:fixed;inset:0;z-index:10;overflow-y:auto;overflow-x:hidden;flex-direction:column;align-items:center;justify-content:center}
+.screen.active{display:flex}
+
+/* floating emoji */
+.fem{position:fixed;pointer-events:none;z-index:300;animation:fup 1.8s ease-out forwards}
+@keyframes fup{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(-170px) rotate(15deg) scale(1.3)}}
+.pxp{position:fixed;width:8px;height:8px;pointer-events:none;z-index:300;animation:pfly .8s ease-out forwards}
+@keyframes pfly{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:var(--to)}}
+
+/* buttons */
+.pbtn{display:inline-block;background:var(--bg);border:3px solid var(--g);color:var(--g);padding:13px 28px;font-size:14px;font-family:inherit;cursor:pointer;letter-spacing:2px;transition:all .1s;box-shadow:4px 4px 0 var(--g)}
+.pbtn:hover{background:rgba(0,255,128,.09);transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--g)}
+.pbtn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--g)}
+.pbtn.ry{border-color:var(--y);color:var(--y);box-shadow:4px 4px 0 var(--y)}
+.pbtn.ry:hover{background:rgba(255,217,61,.09);transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--y)}
+.pbtn.rr{border-color:var(--r);color:var(--r);box-shadow:4px 4px 0 var(--r)}
+.pbtn.rr:hover{background:rgba(255,107,107,.09);transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--r)}
+.pbtn.rp{border-color:var(--p);color:var(--p);box-shadow:4px 4px 0 var(--p)}
+@keyframes blink{50%{opacity:0}}
+
+/* ═══ TITLE ═══ */
+.tw{text-align:center;padding:40px 20px;max-width:460px;width:100%}
+.ttl{font-size:26px;font-weight:900;color:var(--g);text-shadow:4px 4px 0 #003320;letter-spacing:3px;line-height:1.5;margin-bottom:8px}
+.tsub{font-size:13px;color:var(--t3);margin-bottom:28px;line-height:2.2}
+.parade{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:30px;font-size:24px}
+
+/* ═══ CARD DRAW ═══ */
+.cdw{text-align:center;padding:24px 16px;max-width:500px;width:100%}
+.stitle{font-size:17px;color:var(--g);margin-bottom:6px;letter-spacing:2px}
+.ssub{font-size:12px;color:var(--t3);margin-bottom:28px;line-height:2}
+.cards-row{display:flex;justify-content:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;transition:opacity .35s,transform .35s}
+.cards-row.exit{opacity:0;transform:scale(.9) translateY(10px);pointer-events:none}
+/* 3D card */
+.cc{width:140px;height:200px;perspective:700px;cursor:pointer;flex-shrink:0}
+.cc.locked{opacity:.25;cursor:default;pointer-events:none;transition:opacity .4s}
+.ci{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.cc.flipped .ci{transform:rotateY(180deg)}
+.cf{position:absolute;inset:0;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 10px;text-align:center;border:3px solid}
+.cb{border-color:#1e1e3a;background:var(--card);background-image:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,.02)4px,rgba(255,255,255,.02)8px)}
+.cbq{font-size:48px;color:#2a2a4a;animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.85}}
+.cbt{font-size:9px;color:var(--t4);letter-spacing:2px;margin-top:8px}
+.cfr{border-color:var(--y);background:#191300;transform:rotateY(180deg);box-shadow:0 0 24px rgba(255,217,61,.12)}
+.cem{font-size:44px;margin-bottom:8px}
+.cnm{font-size:14px;color:var(--y);font-weight:bold;margin-bottom:8px}
+.cqt{font-size:10px;color:var(--t2);line-height:1.9}
+.card-hint{font-size:12px;color:var(--t3);animation:blink .9s steps(1) infinite;margin-bottom:12px}
+/* boss reveal — centered, replaces the cards */
+.boss-reveal-wrap{display:none;flex-direction:column;align-items:center;gap:16px;animation:fadeUp .4s ease forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.brev{background:var(--card);border:3px solid var(--y);padding:24px 28px;text-align:center;max-width:300px;width:88%;box-shadow:6px 6px 0 var(--y)}
+.brev-em{font-size:60px;margin-bottom:10px;animation:wobble .9s ease-in-out infinite;display:block}
+@keyframes wobble{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.brev-name{font-size:20px;color:var(--y);margin-bottom:4px;font-weight:bold}
+.brev-sub{font-size:11px;color:var(--t3);margin-bottom:14px}
+.brev-quote{font-size:12px;color:var(--t2);line-height:2;padding:12px;background:#09090f;border-left:3px solid var(--y)}
+
+/* ═══ STAGE INTRO ═══ */
+.siw{text-align:center;padding:40px 24px;max-width:380px;width:100%}
+.si-icon{font-size:64px;margin-bottom:14px;animation:bounce .5s steps(2) infinite;display:block}
+@keyframes bounce{0%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.si-name{font-size:22px;color:var(--g);letter-spacing:4px;margin-bottom:10px}
+.si-desc{font-size:13px;color:var(--t3);line-height:2.2;margin-bottom:26px}
+.boss-pair{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.bpill{padding:8px 14px;border:2px solid #1e1e3a;font-size:12px;color:var(--t3)}
+.bpill em{color:var(--y);font-style:normal}
+
+/* ═══ EVENT ═══ */
+.evw{width:100%;max-width:560px;padding:12px}
+.topbar{display:flex;justify-content:space-between;align-items:center;background:#07070f;border:2px solid var(--g);padding:8px 14px;font-size:10px;color:var(--t3);margin-bottom:0}
+.stage-badge{padding:3px 10px;border:1px solid var(--g);color:var(--g);font-size:9px}
+.stats-row{display:flex;gap:14px}
+.stchip{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3)}
+.stchip .val{color:var(--y);font-weight:bold}
+/* scene */
+.scene-wrap{background:#090912;border:2px solid var(--g);border-top:none}
+.sit-box{background:#0e0e20;border-bottom:2px solid #1e1e38;padding:16px 16px 14px}
+.sit-label{font-size:9px;color:var(--g);letter-spacing:2px;margin-bottom:8px;opacity:.8}
+.sit-text{font-size:14px;color:var(--t1);line-height:2;font-weight:500}
+.boss-speech{padding:12px 16px 16px}
+.boss-row{display:flex;gap:12px;align-items:flex-start}
+.binfo{flex-shrink:0;text-align:center;width:58px}
+.bave{font-size:34px;display:block;animation:wobble .9s ease-in-out infinite}
+.btag{font-size:9px;color:var(--r);border:1px solid #3a1515;padding:2px 5px;margin-top:4px;display:block;line-height:1.6;background:rgba(255,107,107,.06)}
+.bubble{background:#0f0f22;border:2px solid #2a2a50;padding:13px 14px;position:relative;flex:1}
+.bubble::before{content:'';position:absolute;left:-9px;top:13px;width:7px;height:7px;background:#0f0f22;border-left:2px solid #2a2a50;border-bottom:2px solid #2a2a50;transform:rotate(45deg)}
+.boss-label{font-size:9px;color:var(--t3);letter-spacing:1px;margin-bottom:7px}
+/* 老板台词：整体用 t2，高亮用黄色，黄色是强调而不是唯一可读内容 */
+.bline{font-size:13px;line-height:2;color:var(--t2)}
+.bline em{color:var(--y);font-style:normal;font-weight:bold}
+/* choices */
+.choices-wrap{padding:14px 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chb{background:#080810;border:2px solid #1e1e38;color:var(--t2);padding:14px 11px;font-size:12px;font-family:inherit;cursor:pointer;text-align:left;line-height:1.9;transition:all .12s}
+.chb:hover{border-color:var(--g);color:var(--t1);background:rgba(0,255,128,.05);transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--g)}
+.chb.danger:hover{border-color:var(--r);box-shadow:3px 3px 0 var(--r)}
+.chb.gold:hover{border-color:var(--y);box-shadow:3px 3px 0 var(--y)}
+.chb.purple:hover{border-color:var(--p);box-shadow:3px 3px 0 var(--p)}
+.chb:active{transform:none;box-shadow:none}
+.ck{font-size:9px;color:var(--t4);display:block;margin-bottom:3px}
+.chb:hover .ck{color:var(--g)}
+.evfoot{display:flex;justify-content:space-between;align-items:center;padding:7px 14px;background:#05050e;border:2px solid var(--g);border-top:1px dashed #1e1e38;font-size:11px;color:var(--t3)}
+.combo-disp{color:var(--y)}
+.combo-disp b{color:var(--r);font-size:13px}
+
+/* ═══ RESULT POPUP ═══ */
+.rpop{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:16px}
+.rpop.active{display:flex}
+.rbox{background:var(--card);border:3px solid var(--g);max-width:380px;width:100%;padding:26px 22px;text-align:center;box-shadow:7px 7px 0 var(--g)}
+.rbox.danger{border-color:var(--r);box-shadow:7px 7px 0 var(--r)}
+.rbox.gold{border-color:var(--y);box-shadow:7px 7px 0 var(--y)}
+.rbox.purple{border-color:var(--p);box-shadow:7px 7px 0 var(--p)}
+.rem2{font-size:52px;margin-bottom:10px;animation:rpop .3s steps(2) 2;display:block}
+@keyframes rpop{0%{transform:scale(.3)}100%{transform:scale(1)}}
+.rtit{font-size:16px;color:var(--g);margin-bottom:10px;letter-spacing:1px;font-weight:bold}
+/* 结果正文：t1主色，em黄色只作强调 */
+.rtxt{font-size:13px;color:var(--t1);line-height:2.2;margin-bottom:12px;text-align:left}
+.rtxt em{color:var(--y);font-style:normal}
+.rtxt b{color:var(--r)}
+.rtwist{font-size:12px;color:var(--t3);line-height:2;text-align:left;border-top:1px dashed #1e1e38;padding-top:10px;margin-bottom:14px}
+.rstat{font-size:11px;color:var(--t3);margin-bottom:18px;padding:8px 10px;background:#0a0a15;border:1px dashed #1e1e38}
+
+/* ═══ MOYU EFFECT ═══ */
+.meff{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.93);display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;cursor:pointer}
+.meff.active{display:flex}
+.mlab{font-size:16px;color:var(--y);text-align:center;line-height:2;animation:blink .55s steps(1) infinite}
+.toilet-scene{position:relative;width:140px;height:140px}
+.t-toilet{position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-size:76px;line-height:1}
+.t-person{position:absolute;bottom:48px;left:50%;transform:translateX(-52%);font-size:44px;animation:sit .55s steps(2) infinite}
+.t-phone{position:absolute;bottom:56px;right:4px;font-size:28px;animation:scrollp .45s steps(2) infinite}
+.t-steam{position:absolute;top:2px;right:12px;font-size:20px;animation:steam 1.6s ease-out infinite}
+@keyframes sit{0%{transform:translateX(-52%) translateY(0)}50%{transform:translateX(-52%) translateY(4px)}}
+@keyframes scrollp{0%{transform:rotate(8deg)}50%{transform:rotate(-6deg)}}
+@keyframes steam{0%{opacity:.8;transform:translateY(0)}100%{opacity:0;transform:translateY(-32px)}}
+.mhint{font-size:11px;color:var(--t4);letter-spacing:2px}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:var(--card);border:3px solid var(--y);padding:22px 28px;text-align:center;z-index:200;transition:transform .15s steps(3);box-shadow:6px 6px 0 var(--y);pointer-events:none;max-width:280px;width:86%}
+.toast.show{transform:translate(-50%,-50%) scale(1)}
+.ti{font-size:40px;display:block;margin-bottom:8px}
+.tl{font-size:9px;color:var(--t3);display:block;margin-bottom:4px;letter-spacing:1px}
+.tn{font-size:15px;color:var(--y);display:block;margin-bottom:5px}
+.td{font-size:11px;color:var(--t1);display:block;line-height:1.9}
+
+/* ═══ REVEAL ═══ */
+.yrw{text-align:center;padding:32px 20px;max-width:440px;width:100%}
+.yrw h2{font-size:14px;color:var(--r);letter-spacing:2px;margin-bottom:6px}
+.yrw p{font-size:12px;color:var(--t3);margin-bottom:22px;line-height:2}
+.envelope{font-size:80px;cursor:pointer;animation:shake .4s ease-in-out infinite;display:block;margin-bottom:14px}
+@keyframes shake{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.grev{animation:popin .3s steps(3)}
+@keyframes popin{from{transform:scale(0)}to{transform:scale(1)}}
+.gletter{font-size:86px;font-weight:900;line-height:1;margin-bottom:8px}
+.gname{font-size:18px;color:var(--t1);margin-bottom:4px;letter-spacing:1px}
+.gtag{font-size:11px;color:var(--t3);margin-bottom:12px}
+.gbonus{font-size:14px;color:var(--y);margin-bottom:14px;font-weight:bold}
+.scards{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:14px 0}
+.sc2{padding:5px 12px;border:1px solid #1e1e38;font-size:11px;color:var(--t3)}
+.gos{font-size:12px;color:var(--t2);line-height:2.2;border-top:1px dashed #1e1e38;padding-top:14px}
+
+/* ═══ SPEECH ═══ */
+.rsw{max-width:520px;width:100%;padding:14px}
+.rsh{text-align:center;margin-bottom:16px}
+.rst{font-size:14px;color:var(--r);margin-bottom:4px;letter-spacing:2px}
+.rsm{font-size:11px;color:var(--t3)}
+.rsb{background:#07070f;border:2px solid #1e1e38;padding:18px;font-size:13px;line-height:2.3;color:var(--t2);margin-bottom:12px;max-height:44vh;overflow-y:auto;border-left:4px solid var(--r)}
+.rsb p{margin-bottom:14px}
+.rsb .bw{color:var(--r);font-style:italic;font-weight:bold}
+.rsb .hy{color:var(--y);font-weight:bold}
+.rshint{font-size:10px;color:var(--t3);text-align:center;margin-bottom:14px;animation:blink 1s steps(1) infinite}
+.ract{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* mobile */
+@media(max-width:480px){
+  .ttl{font-size:20px}
+  .cc{width:110px;height:172px}
+  .cem{font-size:34px}
+  .cnm{font-size:12px}
+  .choices-wrap{grid-template-columns:1fr}
+  .chb{font-size:11px}
+  .gletter{font-size:68px}
+  .bave{font-size:28px}
+  .rsb{font-size:12px}
+}
+@media(max-width:360px){.cc{width:95px;height:152px}.cards-row{gap:10px}}
+</style>
+</head>
+<body>
+<div class="pbg"></div>
+
+<!-- MOYU -->
+<div class="meff" id="meff" onclick="closeMoyu()">
+  <div class="mlab" id="mlab">🚽 带薪如厕中…<br>每秒工资：¥0.87 燃烧中🔥</div>
+  <div class="toilet-scene">
+    <div class="t-toilet">🚽</div>
+    <div class="t-person">🧍</div>
+    <div class="t-phone">📱</div>
+    <div class="t-steam">💨</div>
+  </div>
+  <div class="mhint">[ 点击任意处继续摸鱼 ]</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="ti" id="ti">🏆</span>
+  <span class="tl">称号解锁！</span>
+  <span class="tn" id="tn"></span>
+  <span class="td" id="td"></span>
+</div>
+
+<!-- RESULT POPUP -->
+<div class="rpop" id="rpop">
+  <div class="rbox" id="rbox">
+    <span class="rem2" id="rem2">😶</span>
+    <div class="rtit" id="rtit"></div>
+    <div class="rtxt" id="rtxt"></div>
+    <div class="rstat" id="rstat"></div>
+    <button class="pbtn" id="rnext" onclick="closeResult()" style="font-size:11px;padding:10px 22px">继续 ▶</button>
+  </div>
+</div>
+
+<!-- ══ TITLE ══ -->
+<div class="screen active" id="s-title">
+  <div class="tw">
+    <div class="ttl">🏢 职场求生指南</div>
+    <div class="tsub">一款关于上班这件荒诞事的<br>选择游戏</div>
+    <div class="parade" id="parade"></div>
+    <button class="pbtn" onclick="startGame()">开始打工 ▶</button>
+  </div>
+</div>
+
+<!-- ══ BOSS DRAW ══ -->
+<div class="screen" id="s-boss">
+  <div class="cdw">
+    <div class="stitle">🎴 抽取你的直属老板</div>
+    <div class="ssub">命运的牌局已经洗好<br>翻开其中一张——翻开即确认，没有反悔</div>
+    <div class="cards-row" id="boss-cards"></div>
+    <div class="card-hint" id="boss-hint">▲ 点击任意一张翻开</div>
+    <div class="boss-reveal-wrap" id="boss-reveal"></div>
+  </div>
+</div>
+
+<!-- ══ BOSS2 DRAW ══ -->
+<div class="screen" id="s-boss2">
+  <div class="cdw">
+    <div class="stitle">🎴 抽取你老板的老板</div>
+    <div class="ssub">还有一个更大的阴影在上面<br>他不常出现，但出现必有大事</div>
+    <div class="cards-row" id="boss2-cards"></div>
+    <div class="card-hint" id="boss2-hint">▲ 点击任意一张翻开</div>
+    <div class="boss-reveal-wrap" id="boss2-reveal"></div>
+  </div>
+</div>
+
+<!-- ══ STAGE INTRO ══ -->
+<div class="screen" id="s-stage">
+  <div class="siw">
+    <span class="si-icon" id="si-icon">🥚</span>
+    <div class="si-name" id="si-name">试用期</div>
+    <div class="si-desc" id="si-desc"></div>
+    <div class="boss-pair">
+      <div class="bpill">直属：<em id="si-boss"></em></div>
+      <div class="bpill">大老板：<em id="si-boss2"></em></div>
+    </div>
+    <button class="pbtn" onclick="startEvents()">进入职场 ▶</button>
+  </div>
+</div>
+
+<!-- ══ EVENT ══ -->
+<div class="screen" id="s-event">
+  <div class="evw">
+    <div class="topbar">
+      <span class="stage-badge" id="stage-badge">试用期</span>
+      <div class="stats-row">
+        <div class="stchip">🐟<span class="val" id="sv-m">0</span></div>
+        <div class="stchip">🌸<span class="val" id="sv-p">0</span></div>
+        <div class="stchip">💀<span class="val" id="sv-s">0</span></div>
+        <div class="stchip">🔥<span class="val" id="sv-j">0</span></div>
+      </div>
+    </div>
+    <div class="scene-wrap">
+      <div class="sit-box">
+        <div class="sit-label">📍 当前情境</div>
+        <div class="sit-text" id="ev-sit"></div>
+      </div>
+      <div class="boss-speech">
+        <div class="boss-row">
+          <div class="binfo">
+            <span class="bave" id="boss-em">🧹</span>
+            <span class="btag" id="boss-tag">拖把型</span>
+          </div>
+          <div class="bubble">
+            <div class="boss-label">老板说：</div>
+            <p class="bline" id="ev-bline"></p>
+          </div>
+        </div>
+      </div>
+      <div class="choices-wrap" id="ev-choices"></div>
+    </div>
+    <div class="evfoot">
+      <div class="combo-disp">连击: <b id="combo-cnt">0</b>x <span id="combo-tp" style="font-size:10px"></span></div>
+      <div>事件 <span id="ev-num">1</span>/10 · <span id="ev-stage-txt">试用期</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ REVEAL ══ -->
+<div class="screen" id="s-reveal">
+  <div class="yrw">
+    <h2>📋 年终考核结果</h2>
+    <p>信封已封好，点击打开<br>迎接你的荒诞命运</p>
+    <span class="envelope" id="envelope" onclick="revealGrade()">📨</span>
+    <div id="grade-content" style="display:none">
+      <div class="grev">
+        <div class="gletter" id="gletter"></div>
+        <div class="gname" id="gname"></div>
+        <div class="gbonus" id="gbonus"></div>
+        <div class="scards" id="scards"></div>
+        <div class="gos" id="gos"></div>
+      </div>
+      <br>
+      <button class="pbtn ry" onclick="showSpeech()" style="margin-top:16px">查看绩效面谈话术 ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SPEECH ══ -->
+<div class="screen" id="s-speech">
+  <div class="rsw">
+    <div class="rsh">
+      <div class="rst">📝 绩效面谈话术（存档）</div>
+      <div class="rsm" id="speech-meta"></div>
+    </div>
+    <div class="rsb" id="speech-body"></div>
+    <div class="rshint">↓ 向下滚动查看完整PUA</div>
+    <div class="ract">
+      <button class="pbtn rr" onclick="goLieFlat()">原地躺平 🛌</button>
+      <button class="pbtn ry" onclick="goResign()">提桶跑路 🪣</button>
+      <button class="pbtn rp" onclick="restartGame()">换个老板重来 🎲</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ END ══ -->
+<div class="screen" id="s-end">
+  <div class="tw">
+    <div style="font-size:60px;margin-bottom:16px">🎊</div>
+    <div class="ttl" style="font-size:18px;margin-bottom:12px">你又在职场生存了一年</div>
+    <div class="tsub" id="end-msg"></div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px">
+      <button class="pbtn" onclick="restartGame()">换个老板重来 🎲</button>
+      <button class="pbtn ry" onclick="shareResult()">发给同事共鸣 📤</button>
+      <button class="pbtn rr" onclick="goExam()">出门左转考公 📚</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  BOSSES
+// ═══════════════════════════════════════
+const BOSSES = [
+  {id:'mop',    name:'拖把',      emoji:'🧹',quote:'（一拖再拖）不急，你先做着……',         cat:'time',  b2:false},
+  {id:'cube',   name:'魔方',      emoji:'🎲',quote:'接下来讲六个方面，每面四小点',          cat:'demand',b2:true},
+  {id:'arch',   name:'考古学家',  emoji:'🏺',quote:'你去找一下近三十年的市场销售数据',      cat:'vague', b2:true},
+  {id:'idle',   name:'闲鱼买家',  emoji:'🐟',quote:'这个是新的吗',                          cat:'confuse',b2:false},
+  {id:'gym',    name:'健身教练',  emoji:'💪',quote:'年轻人还是要多锻炼',                    cat:'pua',  b2:false},
+  {id:'bio',    name:'生物学家',  emoji:'🔬',quote:'你为什么干活不能像吃饭一样积极',        cat:'pua',  b2:true},
+  {id:'proph',  name:'天师',      emoji:'🔮',quote:'这个事我要跟上面请示才行',              cat:'dodge', b2:true},
+  {id:'time',   name:'时间旅行者',emoji:'⏰',quote:'（下班前5分钟）报告今晚给我',           cat:'time',  b2:false},
+  {id:'bball',  name:'篮球裁判', emoji:'🏀',quote:'你先别走！！！',                         cat:'time',  b2:false},
+  {id:'marathon',name:'长跑裁判',emoji:'🏃',quote:'你今天晚到了一分三十秒',                 cat:'time',  b2:false},
+  {id:'collect',name:'收藏家',   emoji:'📦',quote:'至少要做三个版本给到我',                 cat:'demand',b2:true},
+  {id:'firstlv',name:'初恋守护者',emoji:'💔',quote:'（改了十个版本）我还是觉得第一个最好', cat:'demand',b2:false},
+  {id:'amnesia',name:'失忆症患者',emoji:'🧠',quote:'我上次没这么说吧？',                    cat:'confuse',b2:false},
+  {id:'wang',   name:'王阳明',   emoji:'📿',quote:'这个事你不要问我，你自己就应该知道',    cat:'vague', b2:true},
+  {id:'foodie', name:'美食家',   emoji:'🥘',quote:'年轻人多吃点亏是好事',                   cat:'pua',  b2:false},
+  {id:'usaguy', name:'美国人',   emoji:'🌃',quote:'（夜里两点）你现在把这份材料改一下',    cat:'time',  b2:true},
+  {id:'illit',  name:'文盲',     emoji:'📝',quote:'你写的什么东西我看不懂',                 cat:'confuse',b2:false},
+  {id:'apple',  name:'苹果树',   emoji:'🍎',quote:'你不要说别的，我只要结果',              cat:'vague', b2:true},
+  {id:'marx',   name:'马克思',   emoji:'✊',quote:'你们在公司要有主人翁意识',               cat:'pua',  b2:true},
+  {id:'sci',    name:'科学家',   emoji:'🧪',quote:'等我再研究研究',                         cat:'dodge', b2:false},
+  {id:'bumper', name:'碰碰车',   emoji:'🚗',quote:'这个事我们开会碰一下',                   cat:'dodge', b2:false},
+  {id:'asimov', name:'阿西莫夫', emoji:'🤖',quote:'你用AI做一下不就好了',                   cat:'vague', b2:false},
+  {id:'charity',name:'慈善家',   emoji:'💸',quote:'离开我们这里，根本没地方愿意招你们',    cat:'pua',  b2:true},
+  {id:'thermo', name:'温度计',   emoji:'🌡',quote:'你知不知道现在就业市场有多冷',           cat:'pua',  b2:true},
+  {id:'seaking',name:'海王',     emoji:'🌊',quote:'我最看好你，别让我失望',                 cat:'pua',  b2:false},
+  {id:'robot',  name:'机器人反抗军',emoji:'🦾',quote:'你们这些人迟早都会被AI取代的',       cat:'pua',  b2:false},
+  {id:'physics',name:'物理学家', emoji:'⚛',quote:'你的重心都应该放在工作上',               cat:'pua',  b2:false},
+  {id:'terror', name:'恐怖分子', emoji:'💥',quote:'效果还是不够炸啊',                       cat:'demand',b2:false},
+  {id:'sniper', name:'狙击手',   emoji:'🎯',quote:'做工作的站位要高，目光要放长远',         cat:'vague', b2:true},
+  {id:'aristo', name:'亚里士多德',emoji:'📐',quote:'你这套方案的逻辑在哪里？',              cat:'vague', b2:true},
+  {id:'pokemon',name:'宝可梦训练师',emoji:'⚡',quote:'你马上来一下',                       cat:'time',  b2:false},
+  {id:'dryer',  name:'烘干机',   emoji:'🌀',quote:'你先干啊，你不干谁干',                   cat:'demand',b2:false},
+  {id:'dadeast',name:'东亚父亲', emoji:'😤',quote:'你找我哭也没用',                         cat:'pua',  b2:false},
+  {id:'ramen',  name:'拉面师傅', emoji:'🍜',quote:'要跟后面的组拉开差距，把他们甩远',      cat:'demand',b2:false},
+];
+
+// ═══════════════════════════════════════
+//  EVENTS (全新内容，荒诞版)
+// ═══════════════════════════════════════
+// bossLine: 根据boss.cat返回不同台词
+// sit: 情境描述（客观）
+// choices: 4个选项，结果都带反转
+
+const EVENTS = [
+// ─── 试用期 ───
+{
+  id:'e1', stage:0, stageLabel:'试用期',
+  title:'🌅 入职第一天',
+  sit:'你刚入职。HR给了你一台电脑、一本厚厚的员工手册，还有一把不知道对哪个门的钥匙。老板走过来了。',
+  bossLine:{
+    time:   '欢迎加入！你先*把那个旧文档整理一下*，不急，下班前给我。（说完就走了）',
+    demand: '欢迎！你今天的任务是把我们产品*出三个概念方向*，多角度，这样我好选。',
+    vague:  '欢迎！你先*感受一下公司氛围*，自己找到自己的节奏，有问题别问我，自己悟。',
+    confuse:'欢迎！你上一个同事留了个文档，*你看一下是不是新的*，应该没过期。',
+    pua:    '欢迎！我就直说了，你们年轻人啊，*要多吃苦*。有什么苦活累活你先上。',
+    dodge:  '欢迎！你先把*位置坐着*，等我和上面对齐完了再给你安排工作。',
+    def:    '欢迎！你先和大家*开会碰一下*，然后自己找事做，不要等别人分配。',
+  },
+  choices:[
+    {key:'A', label:'立刻打开电脑，假装很忙', color:'gold',
+     res:{em:'🖥️', tit:'专业演技', mood:'gold',
+      txt:'你盯着一个空文件夹盯了两小时。下班时老板说："今天第一天，你怎么这么拼？不错！"<em>（你：……）</em>',
+      twist:'你获得了"积极主动"的评价，代价是明天需要真的干活。',
+      stat:{moyu:10}}},
+    {key:'B', label:'主动问老板："我具体做什么？"', color:'danger',
+     res:{em:'😬', tit:'主动精神', mood:'danger',
+      txt:'老板："好问题。你觉得你能做什么？"<b>（沉默10秒）</b>"你先想想，然后来找我。"',
+      twist:'你来找他的时候，他在开一个和你无关的会，并且持续开了三小时。',
+      stat:{shedie:1}}},
+    {key:'C', label:'打开招聘网站看看自己的市值', color:'purple',
+     res:{em:'📄', tit:'居安思危', mood:'purple',
+      txt:'你的市值：比现在高¥3000。你若有所思地收藏了几个岗位，<em>以备不时之需</em>。',
+      twist:'这个理智的操作让你整个下午都格外平静，工作效率反而最高。',
+      stat:{fanGu:10}}},
+    {key:'D', label:'找同事小李搭话，先摸清楚情况', color:'',
+     res:{em:'🤝', tit:'社交侦察', mood:'',
+      txt:'小李附在你耳边说："这里有个不成文规定：第一个月先装死，别出头。"然后意味深长地点了点头。',
+      twist:'你把这句话记在心里，奉行了整整一年。',
+      stat:{moyu:8,pmp:5}}},
+  ]
+},
+{
+  id:'e2', stage:0, stageLabel:'试用期',
+  title:'📢 公司发起"文化共创"活动',
+  sit:'公司HR在群里@所有人：「各位同学，公司正在发起文化价值观共创活动！请大家思考：【我为什么热爱这家公司】，字数不少于300字，今天下班前提交，谢谢大家的积极参与🙏」老板转发并附言。',
+  bossLine:{
+    pua:    '我先说一下，这个*不是选做的*，是必须做的。而且要写真情实感，我一眼看得出来谁在敷衍。',
+    demand: '写完300字以后，*再附上三个公司需要改进的方向*，我想收集大家的想法。',
+    vague:  '你*用心感受一下*，什么叫热爱，然后把感受写出来，就这样。',
+    time:   '现在*离下班还有45分钟*，你认真写一下，写完给我看看。',
+    confuse:'上次有没有做过类似的活动？*我上次没这么说吧*？不管了，这次重新写。',
+    dodge:  '这个活动是上面要求的，你认真做一下，我*把你们的汇总给上面看*。',
+    def:    '认真参与，这种活动其实*很重要的*。（然后他去开会了）',
+  },
+  choices:[
+    {key:'A', label:'认真写了500字，满怀真情实感', color:'',
+     res:{em:'📝', tit:'真情流露', mood:'',
+      txt:'HR回复："写得很好！我们想请你在全员会上<b>分享一下你的感受</b>。"你盯着这条消息，感到一阵晕眩。',
+      twist:'你的500字让你成为了公司文化大使，额外任务：每季度写一篇心得体会。',
+      stat:{pmp:5,jiaban:15}}},
+    {key:'B', label:'复制粘贴公司官网的介绍', color:'gold',
+     res:{em:'🏆', tit:'引经据典', mood:'gold',
+      txt:'HR发来私信："这写得太专业了！和我们的核心理念高度一致！"<em>你没有解释那是哪里来的。</em>',
+      twist:'你的"作文"被当做范例发给了全公司，官网文案组找你来"深入合作"。',
+      stat:{pmp:20,shedie:1}}},
+    {key:'C', label:'写了"因为这里工资准时发"然后删掉', color:'purple',
+     res:{em:'🤔', tit:'诚实的边缘', mood:'purple',
+      txt:'你对着空白文档想了二十分钟，最终写了"公司平台很大，我在这里学到了很多。"',
+      twist:'HR：这句话没有情感，但也没有问题。及格。',
+      stat:{moyu:8}}},
+    {key:'D', label:'已读不回，假装没看到', color:'danger',
+     res:{em:'🙈', tit:'战略性失明', mood:'danger',
+      txt:'老板在你旁边停下来，说："哎，那个文化活动，你写了吗？"你的脸慢慢变红。',
+      twist:'你临时开始写，写了"我热爱公司的茶水间。"被评为"最接地气的回答"。',
+      stat:{shedie:1,moyu:5}}},
+  ]
+},
+{
+  id:'e3', stage:0, stageLabel:'试用期',
+  title:'🚀 老板要搞"头脑风暴"',
+  sit:'周三下午，老板突然走到你工位前，说："你现在有时间吗？我们去小会议室聊一下。"进了会议室你发现，就你们两个人，白板是空的。',
+  bossLine:{
+    vague:  '我们聊一下，*你有什么想法*？什么都行，你打开说。',
+    demand: '我需要你给我*三个有创意的方向*，不限形式，你现在就说。',
+    arch:   '你了解过这个行业*十年前的打法*吗？我们可以参考一下。',
+    pua:    '我观察你一段时间了，感觉你*思维还是有局限*，这次是个机会，放开想。',
+    time:   '我下面*还有个会*，你快一点，十分钟内给我一个结论。',
+    confuse:'这个话题上次我们好像聊过？*我上次没这么说吧*……不管，重新聊。',
+    def:    '就是*随便聊聊*，你来，你开始说。',
+  },
+  choices:[
+    {key:'A', label:'滔滔不绝讲了五个想法', color:'',
+     res:{em:'🎙️', tit:'思维风暴', mood:'',
+      txt:'老板听得连连点头，然后说："不错，你把这五个<b>都做成方案</b>，下周给我。"',
+      twist:'头脑风暴的代价：你帮老板脑暴了，执行工作也是你的。',
+      stat:{jiaban:18}}},
+    {key:'B', label:'反问老板"您觉得呢"', color:'gold',
+     res:{em:'🪞', tit:'以退为进', mood:'gold',
+      txt:'老板开始滔滔不绝，说了二十分钟，最后说："这个思路就按我说的走，<em>你来执行</em>。"',
+      twist:'你一个字没说，但完整记录了老板的想法，现在这些都变成了你的工作。',
+      stat:{paGun:1,jiaban:12}}},
+    {key:'C', label:'说"我需要先做一些调研再来汇报"', color:'purple',
+     res:{em:'🔬', tit:'专业姿态', mood:'purple',
+      txt:'老板满意地点头："好，严谨，这很好。那你<b>周五给我一份调研报告</b>。"<em>（你：……）</em>',
+      twist:'你本想争取时间，却给自己安排了一个新作业。',
+      stat:{jiaban:10,pmp:8}}},
+    {key:'D', label:'保持微笑沉默，等老板先说', color:'danger',
+     res:{em:'🧘', tit:'禅宗答法', mood:'danger',
+      txt:'沉默持续了整整40秒。老板说："你是不是有点紧张？"你说："没有，我在思考。"',
+      twist:'老板认为你是"慢热型人才"，这个标签跟了你整整一年。',
+      stat:{shedie:1,moyu:10}}},
+  ]
+},
+// ─── 正式员工 ───
+{
+  id:'e4', stage:1, stageLabel:'正式员工',
+  title:'📅 被拉进一个神秘会议',
+  sit:'你打开日历，发现被拉进一个会议：时间明天早8点，主题「重要对齐（内部）」，备注栏空白，参会人除了你还有你从没说过话的三个同事。',
+  bossLine:{
+    time:   '*明天早上8点*，不要迟到，也不要问我是什么内容，来了就知道了。',
+    vague:  '就是*大家对齐一下*，你来就好了，不用准备什么。（他实际上也不知道是什么会）',
+    demand: '你来之前*准备一下上周的工作进展*，要有数据，不要只说了什么没说结果。',
+    confuse:'这个会……*我上次有没有跟你提过*？不管，反正明天来。',
+    pua:    '*积极参与*，不要坐在那里当僵尸，领导都在看。',
+    dodge:  '这个会是上面安排的，你去代表我们组，*有什么说有什么*。（他自己请假了）',
+    def:    '*明天8点*，很重要。（没有更多信息了）',
+  },
+  choices:[
+    {key:'A', label:'连夜准备了厚厚的汇报材料', color:'',
+     res:{em:'📚', tit:'备战充分', mood:'',
+      txt:'会议的主题是：「讨论公司要不要换新的饮水机品牌」。<b>没有人汇报工作。</b>',
+      twist:'你精心准备的材料从未被打开。会议结论：维持现状。时长：1小时47分钟。',
+      stat:{jiaban:15,shedie:1}}},
+    {key:'B', label:'什么都不准备，直接去', color:'gold',
+     res:{em:'😌', tit:'随遇而安', mood:'gold',
+      txt:'会议内容和你的工作完全无关，你在角落里默默把下周的计划想好了，<em>算是没白来</em>。',
+      twist:'散会时老板问有没有人有补充，你说没有，老板说："你今天很认真在听。"',
+      stat:{moyu:12,pmp:8}}},
+    {key:'C', label:'提前问老板"这个会的目的是什么"', color:'danger',
+     res:{em:'❓', tit:'追根问底', mood:'danger',
+      txt:'老板回复："你去了就知道了。"（他自己也不知道）',
+      twist:'你去了，会议目的是庆祝一个你不认识的同事入职满一年，有蛋糕。',
+      stat:{shedie:1}}},
+    {key:'D', label:'在会议开始前"临时有事"请假', color:'purple',
+     res:{em:'🏃', tit:'金蝉脱壳', mood:'purple',
+      txt:'你成功缺席了。下午同事告诉你：那个会只开了10分钟，有自助零食。<em>你错过了零食。</em>',
+      twist:'老板问你"临时有什么事"，你说"肚子不舒服"，老板说"多注意身体"。',
+      stat:{moyu:15,paGun:1}}},
+  ]
+},
+{
+  id:'e5', stage:1, stageLabel:'正式员工',
+  title:'🌞 老板转发了一篇文章',
+  sit:'早上9点，老板在工作群里转发了一篇文章：《年轻人，你凭什么不努力？》，然后@所有人，附言："共勉。大家谈谈感想。"',
+  bossLine:{
+    pua:    '我觉得这篇文章说得*非常好*，你们好好读一下，尤其是第三段。（他没有说第三段说了什么）',
+    time:   '你们*今天内*回复一下，说说你们的感想。',
+    marx:   '文章里说的*主人翁意识*，正是我们一直在强调的，要内化到行动中去。',
+    vague:  '我不说太多，你们*自己悟*。',
+    confuse:'这篇文章……我之前是不是发过类似的？*我上次没这么说吧*？反正这个更好。',
+    dodge:  '上面最近比较强调这个，所以我*转发给大家看看*，你们自己领会。',
+    def:    '大家*积极参与讨论*，不要沉默。',
+  },
+  choices:[
+    {key:'A', label:'回复："受益匪浅！深有感触！"加若干感叹号', color:'gold',
+     res:{em:'🙌', tit:'第一个回复', mood:'gold',
+      txt:'老板立刻点赞你的回复，并回复："你一直是这样积极向上的，很好。"<em>其他同事也纷纷跟进，复制了类似的话。</em>',
+      twist:'你的回复成为了模板，你本人成为了"积极分子"的代表，下次老板还会来找你第一个表态。',
+      stat:{pmp:20}}},
+    {key:'B', label:'在群里发"好的"然后立刻静音群', color:'purple',
+     res:{em:'🔕', tit:'最优解', mood:'purple',
+      txt:'你低调且高效。老板没有注意到你的回复，也没有注意到你之后什么也没说。<em>完美犯罪。</em>',
+      twist:'三个月后你发现老板也已经忘记他转发了这篇文章。',
+      stat:{moyu:15}}},
+    {key:'C', label:'认真写了300字读后感，有自己观点', color:'danger',
+     res:{em:'📖', tit:'认真的代价', mood:'danger',
+      txt:'老板看了你的读后感，说："嗯，有自己的想法是好事，但是这个观点……<b>你来我办公室聊一下。</b>"',
+      twist:'你在老板办公室待了四十分钟，讨论了为什么"努力是应该的，但不能有怨气"。',
+      stat:{shedie:1,fanGu:10}}},
+    {key:'D', label:'晚上9点悄悄回复"嗯嗯"', color:'',
+     res:{em:'🌙', tit:'深夜回应', mood:'',
+      txt:'老板立刻回复："还在？好好休息，明天继续加油。"<em>你是第一次，也是唯一一次收到这句话。</em>',
+      twist:'老板认为你"工作投入"，其实你只是忘记静音，手滑回复的。',
+      stat:{pmp:12,jiaban:5}}},
+  ]
+},
+{
+  id:'e6', stage:1, stageLabel:'正式员工',
+  title:'💡 同事小李说"有个想法想碰一下"',
+  sit:'同事小李拉住你，神秘兮兮地说："我有个很好的想法，你帮我看看，我们一起完善一下，然后我去跟老板提。"他的想法其实就是你三个月前提过但被否定的那个。',
+  bossLine:{
+    confuse:'（小李跟老板汇报完了）老板说这个想法不错，问是*谁先想到的*。（现在他看向了你们两个人）',
+    pua:    '你们年轻人要*多合作，少计较*。有好东西就一起做，不要斤斤计较谁先想到的。',
+    vague:  '这个想法*你们自己推进*吧，有结果了汇报给我。（他没有明确谁是负责人）',
+    time:   '想法不错，*下周给我出个方案*。谁来主导？你们自己定。（沉默）',
+    demand: '这个想法*出三个执行版本*，你们两个一人出一个，再合出一个，我选。',
+    apple:  '好的，*我要结果*，不要跟我说谁想到的，谁执行谁就是这个项目负责人。',
+    def:    '不错，*推进一下*，有什么需要我协调的来找我。',
+  },
+  choices:[
+    {key:'A', label:'礼貌地指出这是你之前的想法', color:'danger',
+     res:{em:'⚔️', tit:'据理力争', mood:'danger',
+      txt:'小李说："我不是说完全一样，我这个有创新点。"老板说："你们私下对齐一下。"<b>没有人道歉。</b>',
+      twist:'你们"私下对齐"的结果是：小李依然是提案人，你是"协作支持"。',
+      stat:{fanGu:12,shedie:1}}},
+    {key:'B', label:'假装这是第一次听说，帮他完善', color:'',
+     res:{em:'🤝', tit:'大度的选择', mood:'',
+      txt:'小李汇报完，老板说这个想法很好，让小李来做。小李后来请你吃了一顿饭，你发现饭也是你买单的。',
+      twist:'这个项目成功后，小李的年终考评是A。你的：B。',
+      stat:{jiaban:10,pmp:5}}},
+    {key:'C', label:'直接去老板那里汇报这个想法（快他一步）', color:'gold',
+     res:{em:'⚡', tit:'先发制人', mood:'gold',
+      txt:'你去了，老板说："小李刚才也来跟我说了这个，你们是一起想的？"你：<em>"……对，一起。"</em>',
+      twist:'你们被迫成为这个项目的共同负责人，工作量翻倍，署名一样。',
+      stat:{paGun:1,jiaban:15}}},
+    {key:'D', label:'建议小李："你去提吧，我支持你"', color:'purple',
+     res:{em:'🫶', tit:'战略退让', mood:'purple',
+      txt:'小李去提了，老板让他做，后来项目遇到问题，小李找你说："你帮我看一下。"<em>这是一个没有终点的故事。</em>',
+      twist:'你成功回避了这个项目，但现在每周要给小李"指导"一次，算义务劳动。',
+      stat:{moyu:10,paGun:2}}},
+  ]
+},
+{
+  id:'e7', stage:1, stageLabel:'正式员工',
+  title:'🏕️ 公司团建来了',
+  sit:'行政群通知：本周六公司团建！活动：野外定向越野+拓展训练+晚上露营。「全员参加，这是工作的一部分。」老板补充道。',
+  bossLine:{
+    gym:    '年轻人，这正好是个锻炼的机会，*多运动对身体好*，你们现在太缺运动了。',
+    pua:    '参加团建是*融入团队的表现*，不参加的人，我会记住的。（他笑了一下）',
+    time:   '周六早上*八点准时集合*，不要迟到，我说的。',
+    food:   '先苦后甜，*多吃点亏是好事*，以后回想起来都是好回忆。',
+    confuse:'团建……去年也有一次来着？*我上次没这么说吧*？反正这次不一样，去了就知道了。',
+    vague:  '你去感受一下，这种活动*有它的价值*，不要总想着意义。',
+    def:    '*全员参加*，这是要求，不是建议。',
+  },
+  choices:[
+    {key:'A', label:'积极报名并自告奋勇组织团队', color:'danger',
+     res:{em:'🏆', tit:'队长上线', mood:'danger',
+      txt:'你成为了小队队长，负责统计人数、订外卖、处理有人中暑、调解两个同事的矛盾。',
+      twist:'团建结束后，老板说你"领导力突出"，并把下次团建的组织工作也交给了你。',
+      stat:{jiaban:20,pmp:10}}},
+    {key:'B', label:'报名参加，全程跟在队伍最后面', color:'gold',
+     res:{em:'🚶', tit:'佛系团建', mood:'gold',
+      txt:'你成功完成了所有拓展活动，没有发言，没有表现，没有受伤，<em>也没有建立任何新的社交关系</em>。',
+      twist:'但你发现露营的星空意外地好看。这是这一年里你唯一一次感到片刻平静。',
+      stat:{moyu:15}}},
+    {key:'C', label:'称病请假', color:'purple',
+     res:{em:'🤒', tit:'消失的艺术', mood:'purple',
+      txt:'周一老板问你身体好些了吗，你说好多了谢谢。他说："好，你把上周的工作补一下，周三给我。"',
+      twist:'你省下了一个周六，却在周二晚上加班到11点。等价交换。',
+      stat:{moyu:18,fanGu:5}}},
+    {key:'D', label:'去了，但全程在角落里刷手机', color:'',
+     res:{em:'📱', tit:'肉身参与', mood:'',
+      txt:'拓展教练点名让你参加破冰游戏，你放下手机，用最敷衍的方式完成了所有环节，<em>没有被单独批评</em>。',
+      twist:'合影时你在最边上，这张照片后来被挂在公司走廊。你在里面。',
+      stat:{moyu:10,shedie:1}}},
+  ]
+},
+// ─── 冲刺期 ───
+{
+  id:'e8', stage:2, stageLabel:'冲刺期',
+  title:'💰 你鼓起勇气去谈涨薪',
+  sit:'工作快一年了，你做了一个详细的文档，列出了你这一年做的所有事情、创造的价值、行业薪资对标数据，打算找老板谈涨薪。你敲响了老板办公室的门。',
+  bossLine:{
+    pua:    '我理解你的想法。但是你知道*现在就业市场有多冷吗*？能在这里是你的机会。',
+    charity:'你知道吗，我们这里的福利、平台、氛围，放外面，*你根本进不去这种公司*。',
+    vague:  '这个事情吧，*你自己感受一下*，我们双向评估一下，看看情况。',
+    dodge:  '这个事情我要*和上面汇报一下*，具体结果要等，你先别着急。',
+    confuse:'你上次……我们好像没谈过这个吧？*我上次没这么说吧*？你准备了这么多，不容易。',
+    time:   '你*先说*，我下面有个会，你快一点。',
+    def:    '你说，我听。（他打开了手机）',
+  },
+  choices:[
+    {key:'A', label:'把文档打印出来，逐条汇报', color:'',
+     res:{em:'📊', tit:'充分准备', mood:'',
+      txt:'老板听完说："你做了很多，这我认可。但是公司现在的情况……<b>我先记下来，等下半年再说。</b>"',
+      twist:'"下半年"这个词，在这家公司里等同于"不"。你把文档带回去，存档。',
+      stat:{jiaban:10,shedie:1}}},
+    {key:'B', label:'直接说"我要涨20%"', color:'gold',
+     res:{em:'💰', tit:'开门见山', mood:'gold',
+      txt:'老板愣了一秒，说："……你这个要求比较……直接。"然后他说："我考虑一下。"',
+      twist:'三天后，你收到通知：涨了8%。你数学很好，知道这不是20%。但比0多。',
+      stat:{fanGu:15,pmp:5}}},
+    {key:'C', label:'没说涨薪，只说"想聊聊未来发展"', color:'purple',
+     res:{em:'🌱', tit:'迂回路线', mood:'purple',
+      txt:'老板聊了三十分钟关于公司愿景、你的成长空间、明年的机会，最后说"你还年轻，慢慢来"。',
+      twist:'你离开时，薪资完全没变化，但你得到了三十分钟价值连城的"职业规划指导"。',
+      stat:{pmp:8,moyu:10}}},
+    {key:'D', label:'进去以后紧张，改口说"聊聊工作"', color:'danger',
+     res:{em:'😶', tit:'临阵退缩', mood:'danger',
+      txt:'老板说好，你们聊了二十分钟工作，然后你走出来，站在走廊里对着墙壁发了两分钟的呆。',
+      twist:'你的涨薪申请等于没发生。但你回到工位时，感觉奇怪地轻松。',
+      stat:{shedie:1,moyu:15}}},
+  ]
+},
+{
+  id:'e9', stage:2, stageLabel:'冲刺期',
+  title:'🎭 年会节目你被安排上了',
+  sit:'行政发来通知：「年会节目表请各组报名！每组至少一个节目。」老板说"你们组出一个"，然后看向了你。全组其他人立刻开始盯着桌子。',
+  bossLine:{
+    time:   '就你了，你来，*下周五彩排*，节目类型自己定，不要太丢人就行。',
+    pua:    '年轻人要勇于*展示自己*，这是好机会，以后你会感谢我的。',
+    demand: '最好准备*三个备选方案*，我来决定你们组表演哪个。',
+    vague:  '你来想，*你最了解自己能做什么*。我相信你。（然后他去开会了）',
+    gym:    '年轻人*多参与，多锻炼*，舞台表现能力也是一种核心竞争力。',
+    confuse:'去年节目是什么来着？*我上次没这么说吧*……反正今年重新弄。',
+    def:    '就交给你了，*搞一个有意思的*。',
+  },
+  choices:[
+    {key:'A', label:'策划了一个认真的小品节目，找同事排练两周', color:'',
+     res:{em:'🎬', tit:'全力以赴', mood:'',
+      txt:'表演结束，掌声热烈。领导说："不错！明年你们组继续出！"<b>你们成为了永久节目输出方。</b>',
+      twist:'你付出了两周，建立了一个新的年度传统，这个传统跟你脱不了关系。',
+      stat:{jiaban:20,pmp:15}}},
+    {key:'B', label:'带全组唱了一首《打工人》', color:'gold',
+     res:{em:'🎤', tit:'共情佳作', mood:'gold',
+      txt:'台下爆笑，连大老板都鼓掌了，说"有创意"。老板事后说："这节目有点意思，<em>但意思不能太明显</em>。"',
+      twist:'你在全公司出名了，但名气属于那种"好笑但微妙"的类型。',
+      stat:{shedie:2,pmp:18}}},
+    {key:'C', label:'买了一个魔术道具，表演失败了', color:'purple',
+     res:{em:'🎩', tit:'意外之喜', mood:'purple',
+      txt:'道具在台上坏了，你一脸尴尬地说"稍等"，全场的笑声比任何节目都大。',
+      twist:'老板说："真实，接地气。"这是你本年度获得的最高评价之一。',
+      stat:{shedie:2,moyu:10}}},
+    {key:'D', label:'说"我不太擅长表演"然后推给了小李', color:'danger',
+     res:{em:'🥏', tit:'完美甩锅', mood:'danger',
+      txt:'小李表演了一个模仿老板开会的节目，全组笑到哭，老板<b>笑得最大声</b>，然后看了小李一眼。',
+      twist:'小李的年终是A。这件事的关联性，你不确定，但你一直记得。',
+      stat:{paGun:2,moyu:12}}},
+  ]
+},
+{
+  id:'e10', stage:2, stageLabel:'冲刺期',
+  title:'📋 你被叫去做年度总结汇报',
+  sit:'老板说：全员年度总结会，每个人讲5分钟自己这一年的成果。你翻了翻记录，发现你这一年：参加了17个会议，改了31个版本的文档，发出了203封邮件。以及，做了一些很难量化的事情。',
+  bossLine:{
+    demand: '讲完以后你要附上*三个明年的目标*，要具体可量化，不要说大话。',
+    pua:    '我先说，有人这一年*成长很多*，有人还不够，你们自己知道自己是哪种。',
+    vague:  '就是*把这一年做个总结*，你自己最清楚，讲重点，我给你把把关。',
+    time:   '每人*严格5分钟*，超时我会打断，大家都要讲，轮流来。',
+    confuse:'你去年……我们好像谈过你的目标？*我上次没这么说吧*……你自己讲就好。',
+    apple:  '不要说过程，*我只要结果*。你做了什么，产生了什么价值，直接说。',
+    def:    '你来，*五分钟*，大家都在听。',
+  },
+  choices:[
+    {key:'A', label:'诚实讲了203封邮件和17个会议，说"支持性工作"', color:'',
+     res:{em:'📧', tit:'如实汇报', mood:'',
+      txt:'老板说："嗯，这些是基础工作，明年我们希望你能有更多<b>显性产出</b>。"（你：这不就是……）',
+      twist:'你诚实说了，诚实的结果是，你的工作被定义为"基础"，需要"突破"。',
+      stat:{jiaban:8,shedie:1}}},
+    {key:'B', label:'把每件事包装成战略贡献，用词全是"赋能""落地""生态"', color:'gold',
+     res:{em:'📈', tit:'包装大师', mood:'gold',
+      txt:'大老板听完点头说："这个同学的<em>格局</em>不错。"没有人追问具体是什么。',
+      twist:'你5分钟说完，什么实质内容都没有，但获得了全场最好的评价。',
+      stat:{pmp:25}}},
+    {key:'C', label:'临时说"我去年最大的成就是，没有离职"', color:'purple',
+     res:{em:'😶', tit:'真话时刻', mood:'purple',
+      txt:'全场沉默了三秒，然后爆发出笑声。老板也笑了，但<b>眼神有点复杂</b>。',
+      twist:'你用一句话结束了汇报，但这句话被传说了很久，成为公司年会名场面之一。',
+      stat:{shedie:2,fanGu:10}}},
+    {key:'D', label:'讲到第三分钟PPT崩了，全场安静', color:'danger',
+     res:{em:'💻', tit:'技术事故', mood:'danger',
+      txt:'你站在台上，PPT变成了一片蓝屏。你说"稍等"，重启了三次，最后口头讲完了。',
+      twist:'大老板说："这个同学临场发挥还不错。"这是他今天说的唯一一句夸人的话。',
+      stat:{shedie:1,fanGu:8,pmp:8}}},
+  ]
+},
+];
+
+const STAGES = [
+  {name:'试用期',icon:'🥚',desc:'你刚入职，试用期三个月。\n努力表现，或者……装作努力表现。\n结果其实差不多。',events:[0,1,2]},
+  {name:'正式员工',icon:'💼',desc:'恭喜转正！\n从此这里的事就真的是你的事了。\n（这不一定是好消息）',events:[3,4,5,6]},
+  {name:'冲刺期',icon:'🔥',desc:'年底了，人人都在冲KPI，露出了真面目。\n最后三关，决定你今年的荒诞命运。',events:[7,8,9]},
+];
+
+// 12种职场人格
+const OUTCOMES = [
+  // ── 组合型（优先判定）──
+  {
+    id:'qingxing', grade:'A-（人间清醒）', color:'#00ff80',
+    name:'人间清醒', bonus:'6个月工资 + 内心平静',
+    desc:'"工作方式灵活，懂得取舍，有极强的职场生存智慧"',
+    os:'你看穿了这一切，然后选择了最优解：摸鱼、甩锅、活得好好的。\n你是公司里少数真正快乐的人，没有人知道你是怎么做到的。',
+    tag:'🧘 摸鱼 × 甩锅双修',
+  },
+  {
+    id:'jingli', grade:'特别奖✨', color:'#ff9f43',
+    name:'职场锦鲤', bonus:'公开表扬 + 礼品卡¥599',
+    desc:'"最具影响力员工，处事圆融，是团队的精神图腾"',
+    os:'你没有做什么特别具体的事，但大家都记得你，而且挺喜欢你。\n年终奖金额比拿B的同事还少，但你登上了公司内网头条。',
+    tag:'🌸 高拍马屁 × 高社死',
+  },
+  {
+    id:'lizhiyu', grade:'C（待定）', color:'#c77dff',
+    name:'离职预备役', bonus:'0.8个月 + 自我觉醒',
+    desc:'"工作认真，但和组织文化存在一定摩擦，建议双向评估"',
+    os:'你的简历已经悄悄更新了，投了三家，面试了两家。\nHR说不定已经察觉到了，但没有人明说什么。',
+    tag:'🗡️ 高反骨 × 高社死',
+  },
+  {
+    id:'gongju', grade:'C（3.25）', color:'#ff6b6b',
+    name:'工具人认证', bonus:'1.5个月工资',
+    desc:'"工作努力，但产出不够显性，建议加强向上管理"',
+    os:'你做了团队80%的活，但那80%从来没有被提到过。\n年终考评会上，老板提到了每个人，就是没提你。',
+    tag:'🔥 高加班 × 低拍马屁',
+  },
+  // ── 单一主导型 ──
+  {
+    id:'pmp_type', grade:'S++', color:'#ffd93d',
+    name:'老板知己', bonus:'18个月工资',
+    desc:'"自驱力强，执行力卓越，深度理解业务，有战略视野"',
+    os:'你和老板之间有一种微妙的化学反应。\n他不知道你在拍马屁，你不知道这到底是不是好事。',
+    tag:'🌸 拍马屁主导',
+  },
+  {
+    id:'moyu_type', grade:'B+（超出预期）', color:'#4a90d9',
+    name:'职场咸鱼', bonus:'4个月工资',
+    desc:'"工作状态稳定，心态成熟，是团队的稳定器"',
+    os:'在最不起眼的位置，做了最不起眼的事，存活率全公司第一。\n老板觉得你很轻松，是因为活都在别人那里，你什么都没说。',
+    tag:'🐟 摸鱼主导',
+  },
+  {
+    id:'jiaban_type', grade:'B（达标）', color:'#ff9060',
+    name:'卷王本王', bonus:'3个月工资',
+    desc:'"执行力强，工作投入，但需要注意工作方式的可持续性"',
+    os:'你的工位灯是公司最后关的，你的年终是所有人里最普通的。\n明年你还会这样，你知道的。',
+    tag:'🔥 加班主导',
+  },
+  {
+    id:'pagun_type', grade:'A（优秀）', color:'#4a90d9',
+    name:'太极大师', bonus:'8个月工资',
+    desc:'"懂得资源整合，推动跨部门协作，有管理潜力"',
+    os:'你甩出去的每一口锅，在年终考评里都被称为"委托授权"。\n你自己也已经习惯这个说法了。',
+    tag:'🥏 甩锅主导',
+  },
+  {
+    id:'shedie_type', grade:'S（卓越）', color:'#c77dff',
+    name:'行走的名场面', bonus:'12个月工资',
+    desc:'"有存在感，印象深刻，是公司文化不可或缺的一部分"',
+    os:'你不是最勤奋的，不是最聪明的，但你是最难被忘记的。\n老板记住你，主要因为那几次名场面。',
+    tag:'💀 社死主导',
+  },
+  {
+    id:'fangu_type', grade:'C-（PIP预警）', color:'#ff4444',
+    name:'职场刺头', bonus:'0.5个月 + PIP谈话',
+    desc:'"有想法，但执行方式有待调整，建议提升组织协作能力"',
+    os:'你说的每一句话都是对的。\n说对了有什么用呢。',
+    tag:'🗡️ 反骨主导',
+  },
+  {
+    id:'invisible', grade:'B（达标）', color:'#666',
+    name:'隐形人', bonus:'3个月工资',
+    desc:'"稳定可靠，低调务实，是团队中不可或缺的一份子"',
+    os:'你在这家公司工作了一年，据说。\n有两个同事不确定你的名字，但都说"那个人挺好的"。',
+    tag:'👻 全面均衡',
+  },
+  {
+    id:'balanced', grade:'B（达标）', color:'#888',
+    name:'合格螺丝钉', bonus:'3个月工资',
+    desc:'"稳定可靠，缺乏亮点，期望明年有所突破"',
+    os:'恭喜你，成为了最标准的打工人。\n这不是侮辱，这只是事实。明年继续。',
+    tag:'🔩 标准配置',
+  },
+];
+
+const COMBO_TITLES = {
+  moyu:[{n:3,icon:'🚽',name:'带薪如厕认证',desc:'连续摸鱼3次\n老板：你最近状态不错'},{n:5,icon:'🐟',name:'摸鱼大师MAX',desc:'连续摸鱼5次\n你已成为传说'}],
+  pmp: [{n:3,icon:'😇',name:'首席拍马屁官',desc:'连续拍马屁3次\n老板：你很懂我'}],
+  grind:[{n:3,icon:'😵',name:'卷王预警',desc:'连续认真工作3次\n年终考评：3.25'}],
+  pass:[{n:3,icon:'🥏',name:'太极宗师',desc:'连续甩锅3次\n小李已将你拉黑'}],
+  rebel:[{n:3,icon:'🗡️',name:'职场刺头',desc:'连续反抗3次\nHR已盯上你'}],
+};
+
+// type mapping from choice color
+const COLOR_TYPE = {gold:'moyu', danger:'rebel', purple:'pass', '':'grind'};
+
+// ═══════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════
+let G = {boss:null, boss2:null, eventIdx:0, choices:[], stats:{moyu:0,pmp:0,jiaban:0,paGun:0,shedie:0,fanGu:0}, combo:{type:null,count:0}, outcome:null};
+
+function bl(boss, map) {
+  const line = map[boss.cat]||map[boss.id]||map.def||'';
+  return line.replace(/\*([^*]+)\*/g,'<em>$1</em>');
+}
+
+// ═══════════════════════════════════════
+//  EFFECTS
+// ═══════════════════════════════════════
+function spawnEmoji(list, x, y) {
+  list.forEach((em,i)=>{
+    const el=document.createElement('div');
+    el.className='fem'; el.textContent=em;
+    el.style.left=(x+(Math.random()-.5)*180)+'px';
+    el.style.top=(y+(Math.random()-.5)*80)+'px';
+    el.style.fontSize=(20+Math.random()*18)+'px';
+    el.style.animationDelay=(i*.07)+'s';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),2000);
+  });
+}
+function spawnParticles(x,y,color){
+  for(let i=0;i<10;i++){
+    const el=document.createElement('div'); el.className='pxp';
+    el.style.left=x+'px'; el.style.top=y+'px'; el.style.background=color;
+    const a=(i/10)*Math.PI*2, d=55+Math.random()*65;
+    el.style.setProperty('--to',`translate(${Math.cos(a)*d}px,${Math.sin(a)*d}px)`);
+    el.style.animationDuration=(.5+Math.random()*.4)+'s';
+    document.body.appendChild(el); setTimeout(()=>el.remove(),1200);
+  }
+}
+function showMoyu(){document.getElementById('meff').classList.add('active'); setTimeout(()=>document.getElementById('meff').classList.remove('active'),3500);}
+function closeMoyu(){document.getElementById('meff').classList.remove('active');}
+function showToast(icon,name,desc){const t=document.getElementById('toast');document.getElementById('ti').textContent=icon;document.getElementById('tn').textContent=name;document.getElementById('td').textContent=desc;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+// ═══════════════════════════════════════
+//  SCREENS
+// ═══════════════════════════════════════
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('s-'+id).classList.add('active');}
+
+// ═══════════════════════════════════════
+//  TITLE
+// ═══════════════════════════════════════
+function initTitle(){
+  const p=document.getElementById('parade');
+  shuffle([...BOSSES]).slice(0,14).forEach(b=>{const s=document.createElement('span');s.textContent=b.emoji;p.appendChild(s);});
+}
+
+function startGame(){
+  G={boss:null,boss2:null,eventIdx:0,choices:[],stats:{moyu:0,pmp:0,jiaban:0,paGun:0,shedie:0,fanGu:0},combo:{type:null,count:0},outcome:null};
+  showBossDraw();
+}
+
+// ═══════════════════════════════════════
+//  CARD DRAW (click=lock)
+// ═══════════════════════════════════════
+let _bPool, _b2Pool, _bLocked=false, _b2Locked=false;
+
+function makeCard(boss, onClick) {
+  const cc=document.createElement('div'); cc.className='cc';
+  cc.innerHTML=`<div class="ci"><div class="cf cb"><div class="cbq">?</div><div class="cbt">FLIP</div></div><div class="cf cfr"><div class="cem">${boss.emoji}</div><div class="cnm">${boss.name}</div><div class="cqt">"${boss.quote}"</div></div></div>`;
+  cc.onclick=()=>onClick(boss, cc);
+  return cc;
+}
+
+function showBossDraw(){
+  _bLocked=false;
+  _bPool=shuffle([...BOSSES]).slice(0,3);
+  const cont=document.getElementById('boss-cards');
+  cont.innerHTML=''; cont.classList.remove('exit');
+  const hint=document.getElementById('boss-hint');
+  hint.style.display=''; hint.textContent='▲ 点击任意一张翻开';
+  const rev=document.getElementById('boss-reveal');
+  rev.style.display='none'; rev.innerHTML='';
+  _bPool.forEach(b=>{
+    cont.appendChild(makeCard(b, (boss,cc)=>{
+      if(_bLocked) return;
+      _bLocked=true;
+      cc.classList.add('flipped');
+      cont.querySelectorAll('.cc').forEach(c=>{ if(c!==cc) c.classList.add('locked'); });
+      hint.textContent='✅ 已选定，命运已注定';
+      G.boss=boss;
+      setTimeout(()=>{
+        cont.classList.add('exit');
+        hint.style.display='none';
+        rev.innerHTML=`<div class="brev"><span class="brev-em">${boss.emoji}</span><div class="brev-name">${boss.name}型老板</div><div class="brev-sub">你抽到了，没有反悔的机会</div><div class="brev-quote">"${boss.quote}"</div></div><button class="pbtn ry" onclick="showBoss2Draw()" style="margin-top:16px">继续抽大老板 ▶</button>`;
+        rev.style.display='flex';
+        spawnEmoji(['🎴','😱','💀'], window.innerWidth/2, 300);
+      }, 650);
+    }));
+  });
+  showScreen('boss');
+}
+
+function showBoss2Draw(){
+  _b2Locked=false;
+  const pool=BOSSES.filter(b=>b.b2);
+  _b2Pool=shuffle([...pool]).slice(0,2);
+  const cont=document.getElementById('boss2-cards');
+  cont.innerHTML=''; cont.classList.remove('exit');
+  const hint=document.getElementById('boss2-hint');
+  hint.style.display=''; hint.textContent='▲ 点击任意一张翻开';
+  const rev=document.getElementById('boss2-reveal');
+  rev.style.display='none'; rev.innerHTML='';
+  _b2Pool.forEach(b=>{
+    cont.appendChild(makeCard(b,(boss,cc)=>{
+      if(_b2Locked) return;
+      _b2Locked=true;
+      cc.classList.add('flipped');
+      cont.querySelectorAll('.cc').forEach(c=>{ if(c!==cc) c.classList.add('locked'); });
+      hint.textContent='✅ 已选定，噩梦开始了';
+      G.boss2=boss;
+      setTimeout(()=>{
+        cont.classList.add('exit');
+        hint.style.display='none';
+        rev.innerHTML=`<div class="brev"><span class="brev-em">${boss.emoji}</span><div class="brev-name">${boss.name}型大老板</div><div class="brev-sub">出现必有大事，请做好心理准备</div><div class="brev-quote">"${boss.quote}"</div></div><button class="pbtn" onclick="showStageIntro(0)" style="margin-top:16px">开始打工 ▶</button>`;
+        rev.style.display='flex';
+        spawnEmoji(['👁️','😰','⚠️'], window.innerWidth/2, 300);
+      }, 650);
+    }));
+  });
+  showScreen('boss2');
+}
+
+// ═══════════════════════════════════════
+//  STAGE INTRO
+// ═══════════════════════════════════════
+function showStageIntro(idx){
+  const s=STAGES[idx];
+  document.getElementById('si-icon').textContent=s.icon;
+  document.getElementById('si-name').textContent=s.name;
+  document.getElementById('si-desc').textContent=s.desc;
+  document.getElementById('si-boss').textContent=G.boss.emoji+' '+G.boss.name;
+  document.getElementById('si-boss2').textContent=G.boss2.emoji+' '+G.boss2.name;
+  showScreen('stage');
+}
+function startEvents(){renderEvent();showScreen('event');}
+
+// ═══════════════════════════════════════
+//  EVENTS
+// ═══════════════════════════════════════
+function renderEvent(){
+  const ev=EVENTS[G.eventIdx];
+  document.getElementById('stage-badge').textContent=STAGES[ev.stage].name;
+  document.getElementById('ev-num').textContent=G.eventIdx+1;
+  document.getElementById('ev-stage-txt').textContent=ev.stageLabel;
+  document.getElementById('boss-em').textContent=G.boss.emoji;
+  document.getElementById('boss-tag').textContent=G.boss.name+'型';
+  document.getElementById('ev-sit').textContent=ev.sit;
+  document.getElementById('ev-bline').innerHTML=bl(G.boss,ev.bossLine);
+  // stats
+  const s=G.stats;
+  document.getElementById('sv-m').textContent=s.moyu;
+  document.getElementById('sv-p').textContent=s.pmp;
+  document.getElementById('sv-s').textContent=s.shedie;
+  document.getElementById('sv-j').textContent=s.jiaban;
+  // choices
+  const chs=document.getElementById('ev-choices'); chs.innerHTML='';
+  ev.choices.forEach((c,i)=>{
+    const btn=document.createElement('button');
+    btn.className='chb '+(c.color||'');
+    btn.innerHTML=`<span class="ck">[ ${c.key} ]</span>${c.label}`;
+    btn.onclick=(e)=>handleChoice(i,e);
+    chs.appendChild(btn);
+  });
+}
+
+// ═══════════════════════════════════════
+//  CHOICE
+// ═══════════════════════════════════════
+function handleChoice(idx,e){
+  const ev=EVENTS[G.eventIdx];
+  const choice=ev.choices[idx];
+  const res=choice.res;
+  G.choices.push(choice.color||'grind');
+  // stats
+  Object.entries(res.stat||{}).forEach(([k,v])=>{ if(k in G.stats) G.stats[k]=Math.max(0,G.stats[k]+v); });
+  // combo
+  const type=COLOR_TYPE[choice.color]||'grind';
+  checkCombo(type);
+  // effects
+  const rect=e.target.getBoundingClientRect();
+  const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  if(choice.color==='gold'){showMoyu();spawnEmoji(['🚽','📱','😌','🐟'],cx,cy);spawnParticles(cx,cy,'#ffd93d');}
+  else if(choice.color==='danger'){spawnEmoji(['💀','😬','🔥','💢'],cx,cy);spawnParticles(cx,cy,'#ff6b6b');}
+  else if(choice.color==='purple'){spawnEmoji(['🥏','🙃','🌀','😅'],cx,cy);spawnParticles(cx,cy,'#c77dff');}
+  else {spawnEmoji(['💼','😰','📊','🫠'],cx,cy);spawnParticles(cx,cy,'#00ff80');}
+  showResult(res);
+}
+
+function checkCombo(type){
+  if(type===G.combo.type) G.combo.count++; else{G.combo.type=type;G.combo.count=1;}
+  document.getElementById('combo-cnt').textContent=G.combo.count;
+  const label={moyu:'摸鱼',pmp:'拍马屁',grind:'认真干',pass:'甩锅',rebel:'反抗'}[type]||type;
+  document.getElementById('combo-tp').textContent=label;
+  (COMBO_TITLES[type]||[]).forEach(t=>{if(G.combo.count===t.n) showToast(t.icon,t.name,t.desc);});
+}
+
+function showResult(res){
+  const box=document.getElementById('rbox');
+  box.className='rbox'+(res.mood?' '+res.mood:'');
+  document.getElementById('rem2').textContent=res.em;
+  document.getElementById('rtit').textContent=res.tit;
+  // build text with twist
+  let html=`<p>${res.txt}</p>`;
+  if(res.twist) html+=`<p style="color:var(--y);font-size:11px;border-top:1px dashed #1e1e3a;padding-top:10px;margin-top:4px">⚡ ${res.twist}</p>`;
+  document.getElementById('rtxt').innerHTML=html;
+  const sn={moyu:'🐟摸鱼',pmp:'🌸拍马屁',jiaban:'🔥加班',paGun:'🥏甩锅',shedie:'💀社死',fanGu:'🗡️反骨'};
+  const changes=Object.entries(res.stat||{}).filter(([,v])=>v!==0).map(([k,v])=>`${sn[k]||k} ${v>0?'+'+v:v}`).join('  ·  ');
+  document.getElementById('rstat').textContent=changes||'无数值变化';
+  document.getElementById('rpop').classList.add('active');
+}
+
+function closeResult(){
+  document.getElementById('rpop').classList.remove('active');
+  G.eventIdx++;
+  if(G.eventIdx>=EVENTS.length){showYearEnd();return;}
+  const prev=EVENTS[G.eventIdx-1], curr=EVENTS[G.eventIdx];
+  if(curr.stage!==prev.stage) showStageIntro(curr.stage);
+  else renderEvent();
+}
+
+// ═══════════════════════════════════════
+//  YEAR END
+// ═══════════════════════════════════════
+function showYearEnd(){
+  document.getElementById('envelope').style.display='block';
+  document.getElementById('grade-content').style.display='none';
+  showScreen('reveal');
+}
+function determineOutcome(s) {
+  // 把甩锅次数和社死次数放大，使其能和连续数值比较
+  const scores = {
+    moyu:   s.moyu,
+    pmp:    s.pmp,
+    jiaban: s.jiaban,
+    paGun:  s.paGun * 13,
+    shedie: s.shedie * 11,
+    fanGu:  s.fanGu,
+  };
+  const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const dominant = sorted[0][0];
+  const gap = sorted[0][1] - sorted[1][1];
+  const total = Object.values(scores).reduce((a,b)=>a+b, 0);
+
+  // ── 组合型：必须该类数值是主导才触发 ──
+  // 人间清醒：摸鱼为主 + 有甩锅习惯
+  if (dominant==='moyu' && s.moyu >= 18 && s.paGun >= 2)
+    return OUTCOMES.find(o=>o.id==='qingxing');
+  // 职场锦鲤：拍马屁为主 + 有社死经历（凑热闹型）
+  if (dominant==='pmp' && s.pmp >= 25 && s.shedie >= 2)
+    return OUTCOMES.find(o=>o.id==='jingli');
+  // 离职预备役：反骨为主 + 有社死经历
+  if (dominant==='fanGu' && s.fanGu >= 15 && s.shedie >= 1)
+    return OUTCOMES.find(o=>o.id==='lizhiyu');
+  // 工具人：加班为主 + 拍马屁少
+  if (dominant==='jiaban' && s.jiaban >= 25 && s.pmp < 15)
+    return OUTCOMES.find(o=>o.id==='gongju');
+
+  // ── 单一主导型（主导数值和第二名差距够大） ──
+  if (total > 25 && gap >= 12) {
+    const map = {
+      pmp:    'pmp_type',
+      moyu:   'moyu_type',
+      jiaban: 'jiaban_type',
+      paGun:  'pagun_type',
+      shedie: 'shedie_type',
+      fanGu:  'fangu_type',
+    };
+    return OUTCOMES.find(o=>o.id===map[dominant]);
+  }
+
+  // 全部数值都很低 → 隐形人
+  if (total < 20) return OUTCOMES.find(o=>o.id==='invisible');
+
+  // 均衡默认 → 螺丝钉
+  return OUTCOMES.find(o=>o.id==='balanced');
+}
+
+function revealGrade(){
+  document.getElementById('envelope').style.display='none';
+  const s=G.stats;
+  G.outcome = determineOutcome(s);
+  const o=G.outcome;
+  document.getElementById('grade-content').style.display='block';
+  const gl=document.getElementById('gletter'); gl.textContent=o.grade; gl.style.color=o.color;
+  document.getElementById('gname').innerHTML=`【 ${o.name} 】<br><span style="font-size:11px;color:var(--t3);letter-spacing:1px">${o.tag||''}</span>`;
+  document.getElementById('gbonus').textContent='🧧 年终奖：'+o.bonus;
+  document.getElementById('gos').textContent=o.desc+'\n\n'+o.os;
+  const sn=[{k:'moyu',l:'🐟摸了',u:'点'},{k:'pmp',l:'🌸拍了',u:'马屁'},{k:'jiaban',l:'🔥加了',u:'班'},{k:'paGun',l:'🥏甩了',u:'次锅'},{k:'shedie',l:'💀社死',u:'次'}];
+  document.getElementById('scards').innerHTML=sn.map(x=>`<span class="sc2">${x.l}${s[x.k]}${x.u}</span>`).join('');
+  spawnEmoji(['🎊','🎉','💫','🎈'],window.innerWidth/2,window.innerHeight/2);
+}
+
+// ═══════════════════════════════════════
+//  SPEECH GENERATOR
+// ═══════════════════════════════════════
+function showSpeech(){
+  document.getElementById('speech-meta').textContent=`面谈人：${G.boss.emoji}${G.boss.name}型  ·  ${new Date().getFullYear()}年度绩效面谈  ·  仅供内部存档`;
+  document.getElementById('speech-body').innerHTML=generateSpeech();
+  showScreen('speech');
+}
+function generateSpeech(){
+  const s=G.stats, o=G.outcome, boss=G.boss;
+  const p=[];
+  // open
+  const opens=[
+    `首先，我想说，<span class="hy">这一年你的成长是有目共睹的</span>。不管是在业务理解上，还是在融入团队方面，我都看到了你在努力。这一点，我是认可的。`,
+    `我觉得今天这个谈话很有必要，因为<span class="hy">我是把你当自己人的</span>，所以才会说一些比较真实的东西，你要理解这是我对你的重视。`,
+    `坦白说，<span class="hy">当初你入职的时候我对你是有期望的</span>，这个期望到现在我还是有。你不要有压力，有期望是好事。`,
+  ];
+  p.push('<p>'+opens[Math.floor(Math.random()*opens.length)]+'</p>');
+  // stat inserts
+  if(s.jiaban>=30) p.push(`<p>你的付出我都看在眼里。但是呢，我想跟你聊一个问题：<span class="bw">付出本身不是KPI</span>。你做了很多，但有多少是<span class="hy">让别人感知到的</span>？很多时候，把价值展示出来，和创造价值本身，同样重要。你在这方面还需要刻意练习。</p>`);
+  if(s.moyu>=30) p.push(`<p>我观察到你整体状态比较稳定，这是优点。但是<span class="bw">稳定有时候也意味着缺乏突破</span>。我希望你明年能找到更多<span class="hy">主动发力的点</span>，不要总等别人来推你。</p>`);
+  if(s.pmp>=30) p.push(`<p>你的软实力是很在线的，情商也高，这点我很欣赏。但我也想提醒你，<span class="bw">在展示自己的同时，实质性的产出也要跟上</span>，不能光有形式。你自己体会一下这个平衡。</p>`);
+  if(s.paGun>=3) p.push(`<p>你在资源整合方面有天赋，懂得协调。但是<span class="bw">ownership意识这块你要加强</span>，就是说，一件事交给你，你要从头到尾负责，而不是……分发出去就完了。</p>`);
+  if(s.shedie>=3) p.push(`<p>你的存在感很强，团队里对你印象都比较深，这是优势。但是，<span class="bw">存在感要用在对的地方</span>。有时候保持一定的低调感，也是一种职场智慧。你好好想想这个。</p>`);
+  if(s.fanGu>=20) p.push(`<p>你有想法，这是好的。但是我想说，<span class="bw">想法要在合适的场合用合适的方式表达</span>。你有时候显得有点……直接，这在职场上需要磨一磨。这不是压制你，是在帮你。</p>`);
+  // comparison
+  p.push(`<p>你看有些同事，不一定做得比你多，但是<span class="bw">让大家看到的比你多</span>，为什么？因为他们懂得经营自己的职场形象。这个你要学，这是一种能力，不是投机取巧。</p>`);
+  // outcome
+  if(o.id==='hardworker') p.push(`<p>综合来看，今年的考评是<span class="bw">${o.grade}</span>。我知道你可能会有一些情绪，但这个结果是<span class="hy">对你的激励，不是否定</span>。你还有很大的提升空间，我们一起努力。</p>`);
+  else if(o.id==='bootlicker') p.push(`<p>综合来看，你今年表现<span class="hy">非常出色</span>，考评是<span class="bw">${o.grade}</span>。你的<span class="bw">战略感和执行力</span>都很突出，我希望你继续保持，明年的期望会更高。</p>`);
+  else if(o.id==='rebel') p.push(`<p>今年的考评是<span class="bw">${o.grade}</span>。我借这个机会跟你深入谈一下，你的能力我是认可的，但<span class="bw">协作方式需要调整</span>。我们会给你一个改进的机会，能不能把握住，就看你自己了。</p>`);
+  else p.push(`<p>综合下来，考评是<span class="bw">${o.grade}</span>，年终奖是<span class="hy">${o.bonus}</span>。这个结果是客观的，你自己也反思一下，哪些地方可以更好。</p>`);
+  // promise
+  const promises=[
+    `<p>关于明年，<span class="hy">我跟HR那边聊过了</span>，你的发展空间会更大。具体的，等时机成熟了我们再谈。总之你放心，<span class="bw">我是记着你的</span>，时机到了我第一个想到你。</p>`,
+    `<p>明年会有一些新的机会，我会<span class="hy">优先考虑你</span>。但是前提是，你要先在今天我们谈到的这几个方面做出改变。<span class="bw">我对你的期待，从来没有降低过。</span></p>`,
+    `<p>你有没有考虑过<span class="hy">往管理方向走</span>？我觉得你是有潜力的。现在时机还不成熟，但可以开始准备，<span class="bw">我会创造机会让你锻炼</span>，具体什么时候……我们看情况。</p>`,
+  ];
+  p.push(promises[Math.floor(Math.random()*promises.length)]);
+  // closer by boss type
+  const closers={
+    time:`<p>好，<span class="bw">我还有个会</span>，时间差不多了。你回去好好想想今天我说的。有问题随时来找我。加油啊。</p>`,
+    demand:`<p>我总结一下：第一，提升显性产出；第二，加强向上管理；第三，拓展影响力。<span class="bw">你把这三点写下来，下周给我看看。</span>好，就这样。</p>`,
+    vague:`<p>总的来说，<span class="hy">我对你是有期待的</span>。你好好<span class="bw">感受一下</span>今天我说的，我就不多解释了。明年加油。</p>`,
+    pua:`<p>我说这些，是因为<span class="hy">我对你有期望</span>，否则懒得跟你讲这么多。<span class="bw">你知道我为什么花时间跟你谈吗？因为我觉得你值得。</span>好好干。</p>`,
+    confuse:`<p>好，今天就聊这些，我们<span class="bw">找时间再对齐一下</span>，具体时间我来安排。你先回去消化一下。</p>`,
+    dodge:`<p>关于年终奖的发放时间，我还需要<span class="bw">跟上面再确认一下</span>，你先等我消息。好，就这样。</p>`,
+    def:`<p>好，今天就到这里。你有什么想说的吗？（不等你回答）好，那就这样，<span class="bw">明年继续努力</span>，我们一起加油。</p>`,
+  };
+  p.push(closers[boss.cat]||closers.def);
+  return p.join('');
+}
+
+// ═══════════════════════════════════════
+//  END
+// ═══════════════════════════════════════
+function showEnd(icon, title, msg){
+  const s=G.stats;
+  const defaults=[
+    `你又在这家公司撑过了一年。\n摸了${s.moyu}点鱼，甩了${s.paGun}次锅，社死了${s.shedie}次。\n值了。`,
+    `${G.boss.name}型老板让你这一年如此丰富。\n丰富，但谈不上快乐。`,
+    `明年这个时候，我们再见。\n（如果你还在的话）`,
+  ];
+  document.querySelector('#s-end .ttl').textContent = title || '你又在职场生存了一年';
+  document.querySelector('#s-end div[style*="font-size:60px"]').textContent = icon || '🎊';
+  document.getElementById('end-msg').textContent = msg || defaults[Math.floor(Math.random()*defaults.length)];
+  showScreen('end');
+}
+
+function goLieFlat(){
+  showEnd('🛌','选择了躺平',
+    `你把绩效面谈记录截图，\n发到了朋友圈，文案是"。"\n\n没有人评论，但有38个人点赞。\n你觉得，大家都懂。`);
+}
+
+function goResign(){
+  showEnd('🪣','提桶跑路',
+    `你打开了离职申请表。\n填好名字，停下来了。\n\n想了三分钟，关掉了。\n但简历已经更新好了，随时可以再填。`);
+}
+
+function goExam(){
+  showEnd('📚','出门左转考公',
+    `你搜索了"国考报名时间"。\n发现已经过了截止日期。\n\n你收藏了明年的备考日历，\n然后打开电脑，继续上班。`);
+}
+function shareResult(){
+  const o=G.outcome;
+  const txt=`【职场求生指南】\n我抽到了${G.boss.name}型老板\n年终考评：${o.grade}\n年终奖：${o.bonus}\n\n"${o.os}"\n\n#职场求生 #打工人`;
+  if(navigator.clipboard) navigator.clipboard.writeText(txt).then(()=>alert('已复制！去粘贴分享吧'));
+  else prompt('复制下面的文字：',txt);
+}
+function restartGame(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));startGame();}
+
+// ═══════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+initTitle();
+</script>
+</body>
+</html>
